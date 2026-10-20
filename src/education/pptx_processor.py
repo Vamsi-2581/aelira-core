@@ -1570,7 +1570,10 @@ class PowerPointProcessor:
         4. Otherwise: use standard generate_alt_text()
         """
         try:
-            alt_text = shape._element.get("descr", "")
+            # In PresentationML, alternative text belongs to the picture's non-visual properties.
+            # Reading the attribute from p:pic itself always returns an empty value.
+            c_nv_pr = shape._element.xpath("./p:nvPicPr/p:cNvPr")
+            alt_text = c_nv_pr[0].get("descr", "") if c_nv_pr else ""
             has_alt = alt_text and alt_text.strip() != ""
 
             if not has_alt:
